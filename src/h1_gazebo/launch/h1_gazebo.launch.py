@@ -46,14 +46,23 @@ def generate_launch_description():
     world_file = os.path.join(pkg_h1_gazebo, 'worlds', 'h1_world.sdf')
     rviz_config = os.path.join(pkg_h1_gazebo, 'config', 'h1_display.rviz')
     
-    # Set Gazebo resource path to find meshes
-    gz_models_path = os.path.join(ws_dir, 'src', 'robots')
-    
+    # Set Gazebo resource path to find meshes.
+    # - src/robots: H1 URDF meshes (model://h1_description)
+    # - ~/.gazebo/models: classic Gazebo model database used by h1_world.sdf
+    #   (gas_station, lamp_post, trees, cars, signs, ...). Appended so the
+    #   street-scene <include> tags resolve their model:// URIs.
+    home_models_path = os.path.join(os.path.expanduser('~'), '.gazebo', 'models')
+    existing_resource_path = os.environ.get('GZ_SIM_RESOURCE_PATH', '')
+    resource_paths = [os.path.join(ws_dir, 'src', 'robots'), home_models_path]
+    if existing_resource_path:
+        resource_paths.append(existing_resource_path)
+    gz_models_path = os.pathsep.join(resource_paths)
+
     gz_resource_path = SetEnvironmentVariable(
         name='GZ_SIM_RESOURCE_PATH',
         value=gz_models_path
     )
-    
+
     ign_resource_path = SetEnvironmentVariable(
         name='IGN_GAZEBO_RESOURCE_PATH',
         value=gz_models_path

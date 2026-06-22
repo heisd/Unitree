@@ -1,13 +1,13 @@
 <?xml version="1.0" ?>
 <sdf version="1.8">
   <world name="h1_world">
-    
+
     <!-- Physics -->
     <physics name="1ms" type="ignored">
       <max_step_size>0.001</max_step_size>
       <real_time_factor>1.0</real_time_factor>
     </physics>
-    
+
     <!-- Plugins -->
     <plugin filename="gz-sim-physics-system"
             name="gz::sim::systems::Physics">
@@ -26,19 +26,27 @@
     </plugin>
     <plugin filename="gz-sim-sensors-system"
             name="gz::sim::systems::Sensors">
-      <render_engine>ogre2</render_engine>
+      <render_engine>ogre</render_engine>
     </plugin>
-    
+
     <!-- Lighting -->
+    <scene>
+      <ambient>0.5 0.5 0.5 1</ambient>
+      <background>0.7 0.8 0.95 1</background>
+      <sky></sky>
+    </scene>
+
     <light type="directional" name="sun">
       <cast_shadows>true</cast_shadows>
       <pose>0 0 10 0 0 0</pose>
-      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <diffuse>0.9 0.9 0.9 1</diffuse>
       <specular>0.2 0.2 0.2 1</specular>
-      <direction>-0.5 0.1 -0.9</direction>
+      <direction>-0.5 0.3 -0.9</direction>
     </light>
-    
-    <!-- Ground Plane -->
+
+    <!-- ====================================================== -->
+    <!-- Ground (grass / open terrain beside the road)          -->
+    <!-- ====================================================== -->
     <model name="ground_plane">
       <static>true</static>
       <link name="link">
@@ -46,7 +54,7 @@
           <geometry>
             <plane>
               <normal>0 0 1</normal>
-              <size>100 100</size>
+              <size>200 200</size>
             </plane>
           </geometry>
           <surface>
@@ -62,17 +70,246 @@
           <geometry>
             <plane>
               <normal>0 0 1</normal>
-              <size>100 100</size>
+              <size>200 200</size>
             </plane>
           </geometry>
           <material>
-            <ambient>0.8 0.8 0.8 1</ambient>
-            <diffuse>0.8 0.8 0.8 1</diffuse>
-            <specular>0.8 0.8 0.8 1</specular>
+            <ambient>0.35 0.45 0.30 1</ambient>
+            <diffuse>0.40 0.52 0.34 1</diffuse>
+            <specular>0.05 0.05 0.05 1</specular>
           </material>
         </visual>
       </link>
     </model>
-    
+
+    <!-- ====================================================== -->
+    <!-- Street surface (visual only - robot walks on ground)   -->
+    <!-- Road runs along +X, centered on y=0, 8 m wide          -->
+    <!-- ====================================================== -->
+    <model name="road">
+      <static>true</static>
+      <link name="link">
+        <visual name="asphalt">
+          <pose>15 0 0.01 0 0 0</pose>
+          <geometry>
+            <box><size>70 8 0.02</size></box>
+          </geometry>
+          <material>
+            <ambient>0.18 0.18 0.19 1</ambient>
+            <diffuse>0.22 0.22 0.23 1</diffuse>
+            <specular>0.05 0.05 0.05 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Double yellow center line -->
+    <model name="center_line">
+      <static>true</static>
+      <link name="link">
+        <visual name="line_a">
+          <pose>15 0.18 0.021 0 0 0</pose>
+          <geometry><box><size>70 0.15 0.005</size></box></geometry>
+          <material>
+            <ambient>0.85 0.72 0.05 1</ambient>
+            <diffuse>0.95 0.80 0.07 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_b">
+          <pose>15 -0.18 0.021 0 0 0</pose>
+          <geometry><box><size>70 0.15 0.005</size></box></geometry>
+          <material>
+            <ambient>0.85 0.72 0.05 1</ambient>
+            <diffuse>0.95 0.80 0.07 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Sidewalks (visual only, light concrete) -->
+    <model name="sidewalk_left">
+      <static>true</static>
+      <link name="link">
+        <visual name="visual">
+          <pose>15 5.5 0.02 0 0 0</pose>
+          <geometry><box><size>70 3 0.04</size></box></geometry>
+          <material>
+            <ambient>0.55 0.55 0.55 1</ambient>
+            <diffuse>0.62 0.62 0.62 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="sidewalk_right">
+      <static>true</static>
+      <link name="link">
+        <visual name="visual">
+          <pose>15 -5.5 0.02 0 0 0</pose>
+          <geometry><box><size>70 3 0.04</size></box></geometry>
+          <material>
+            <ambient>0.55 0.55 0.55 1</ambient>
+            <diffuse>0.62 0.62 0.62 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Zebra crossing near the robot start -->
+    <model name="crosswalk">
+      <static>true</static>
+      <link name="link">
+        <visual name="s1"><pose>-10.0 0 0.021 0 0 0</pose>
+          <geometry><box><size>0.5 7 0.005</size></box></geometry>
+          <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.95 0.95 0.95 1</diffuse></material></visual>
+        <visual name="s2"><pose>-9.0 0 0.021 0 0 0</pose>
+          <geometry><box><size>0.5 7 0.005</size></box></geometry>
+          <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.95 0.95 0.95 1</diffuse></material></visual>
+        <visual name="s3"><pose>-8.0 0 0.021 0 0 0</pose>
+          <geometry><box><size>0.5 7 0.005</size></box></geometry>
+          <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.95 0.95 0.95 1</diffuse></material></visual>
+        <visual name="s4"><pose>-7.0 0 0.021 0 0 0</pose>
+          <geometry><box><size>0.5 7 0.005</size></box></geometry>
+          <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.95 0.95 0.95 1</diffuse></material></visual>
+        <visual name="s5"><pose>-6.0 0 0.021 0 0 0</pose>
+          <geometry><box><size>0.5 7 0.005</size></box></geometry>
+          <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.95 0.95 0.95 1</diffuse></material></visual>
+      </link>
+    </model>
+
+    <!-- ====================================================== -->
+    <!-- Buildings (set back from the road)                     -->
+    <!-- ====================================================== -->
+    <include>
+      <name>gas_station</name>
+      <uri>model://gas_station</uri>
+      <pose>34 -16 0 0 0 3.14159</pose>
+    </include>
+    <include>
+      <name>fire_station</name>
+      <uri>model://fire_station</uri>
+      <pose>24 17 0 0 0 0</pose>
+    </include>
+
+    <!-- ====================================================== -->
+    <!-- Street furniture - LEFT sidewalk (y = +)               -->
+    <!-- ====================================================== -->
+    <include>
+      <name>lamp_post_l1</name>
+      <uri>model://lamp_post</uri>
+      <pose>-5 6.3 0 0 0 0</pose>
+    </include>
+    <include>
+      <name>lamp_post_l2</name>
+      <uri>model://lamp_post</uri>
+      <pose>15 6.3 0 0 0 0</pose>
+    </include>
+    <include>
+      <name>lamp_post_l3</name>
+      <uri>model://lamp_post</uri>
+      <pose>35 6.3 0 0 0 0</pose>
+    </include>
+    <include>
+      <name>bus_stop</name>
+      <uri>model://bus_stop</uri>
+      <pose>-8 6 0 0 0 3.14159</pose>
+    </include>
+    <include>
+      <name>mailbox</name>
+      <uri>model://mailbox</uri>
+      <pose>8 4.6 0 0 0 -1.5708</pose>
+    </include>
+    <include>
+      <name>speed_limit_sign</name>
+      <uri>model://speed_limit_sign</uri>
+      <pose>25 4.8 0 0 0 1.5708</pose>
+    </include>
+
+    <!-- Trees on the left green strip -->
+    <include>
+      <name>oak_tree_1</name>
+      <uri>model://oak_tree</uri>
+      <pose>-12 10 0 0 0 0</pose>
+    </include>
+    <include>
+      <name>pine_tree_1</name>
+      <uri>model://pine_tree</uri>
+      <pose>6 11 0 0 0 0</pose>
+    </include>
+    <include>
+      <name>oak_tree_2</name>
+      <uri>model://oak_tree</uri>
+      <pose>28 10 0 0 0 0</pose>
+    </include>
+
+    <!-- ====================================================== -->
+    <!-- Street furniture - RIGHT sidewalk (y = -)              -->
+    <!-- ====================================================== -->
+    <include>
+      <name>lamp_post_r1</name>
+      <uri>model://lamp_post</uri>
+      <pose>-10 -6.3 0 0 0 3.14159</pose>
+    </include>
+    <include>
+      <name>lamp_post_r2</name>
+      <uri>model://lamp_post</uri>
+      <pose>10 -6.3 0 0 0 3.14159</pose>
+    </include>
+    <include>
+      <name>lamp_post_r3</name>
+      <uri>model://lamp_post</uri>
+      <pose>30 -6.3 0 0 0 3.14159</pose>
+    </include>
+    <include>
+      <name>stop_sign</name>
+      <uri>model://stop_sign</uri>
+      <pose>-15 -5 0 0 0 1.5708</pose>
+    </include>
+    <include>
+      <name>fire_hydrant</name>
+      <uri>model://fire_hydrant</uri>
+      <pose>-3 -4.3 0 0 0 0</pose>
+    </include>
+    <include>
+      <name>person_standing</name>
+      <uri>model://person_standing</uri>
+      <pose>5 -4.6 0 0 0 1.5708</pose>
+    </include>
+
+    <!-- Telephone poles along the far right -->
+    <include>
+      <name>telephone_pole_1</name>
+      <uri>model://telephone_pole</uri>
+      <pose>-18 -9 0 0 0 0</pose>
+    </include>
+    <include>
+      <name>telephone_pole_2</name>
+      <uri>model://telephone_pole</uri>
+      <pose>2 -9 0 0 0 0</pose>
+    </include>
+    <include>
+      <name>telephone_pole_3</name>
+      <uri>model://telephone_pole</uri>
+      <pose>22 -9 0 0 0 0</pose>
+    </include>
+
+    <!-- ====================================================== -->
+    <!-- Parked cars along the right curb (facing +X)           -->
+    <!-- ====================================================== -->
+    <include>
+      <name>car_hatchback_red</name>
+      <uri>model://hatchback_red</uri>
+      <pose>0 -3 0 0 0 0</pose>
+    </include>
+    <include>
+      <name>car_pickup</name>
+      <uri>model://pickup</uri>
+      <pose>12 -3 0 0 0 0</pose>
+    </include>
+    <include>
+      <name>car_suv</name>
+      <uri>model://suv</uri>
+      <pose>24 -3 0 0 0 0</pose>
+    </include>
+
   </world>
 </sdf>
