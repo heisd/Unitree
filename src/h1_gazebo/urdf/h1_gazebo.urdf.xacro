@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="h1_gazebo">
+  
+  <!-- Include the base H1 URDF -->
+  <xacro:include filename="$(find h1_description)/urdf/h1.urdf"/>
+  
+  <!-- Gazebo Material Colors -->
+  <gazebo reference="pelvis">
+    <material>Gazebo/DarkGrey</material>
+  </gazebo>
+  
+  <gazebo reference="torso_link">
+    <material>Gazebo/DarkGrey</material>
+  </gazebo>
+  
+  <!-- Gazebo Physics Properties -->
+  <gazebo>
+    <plugin filename="gz-sim-joint-state-publisher-system"
+            name="gz::sim::systems::JointStatePublisher">
+      <topic>joint_states</topic>
+      <joint_name>left_hip_yaw_joint</joint_name>
+      <joint_name>left_hip_roll_joint</joint_name>
+      <joint_name>left_hip_pitch_joint</joint_name>
+      <joint_name>left_knee_joint</joint_name>
+      <joint_name>left_ankle_joint</joint_name>
+      <joint_name>right_hip_yaw_joint</joint_name>
+      <joint_name>right_hip_roll_joint</joint_name>
+      <joint_name>right_hip_pitch_joint</joint_name>
+      <joint_name>right_knee_joint</joint_name>
+      <joint_name>right_ankle_joint</joint_name>
+      <joint_name>torso_joint</joint_name>
+      <joint_name>left_shoulder_pitch_joint</joint_name>
+      <joint_name>left_shoulder_roll_joint</joint_name>
+      <joint_name>left_shoulder_yaw_joint</joint_name>
+      <joint_name>left_elbow_joint</joint_name>
+      <joint_name>right_shoulder_pitch_joint</joint_name>
+      <joint_name>right_shoulder_roll_joint</joint_name>
+      <joint_name>right_shoulder_yaw_joint</joint_name>
+      <joint_name>right_elbow_joint</joint_name>
+    </plugin>
+  </gazebo>
+  
+  <!-- IMU Sensor -->
+  <gazebo reference="imu_link">
+    <sensor name="imu_sensor" type="imu">
+      <always_on>true</always_on>
+      <update_rate>400</update_rate>
+      <topic>imu/data</topic>
+      <gz_frame_id>imu_link</gz_frame_id>
+      <imu>
+        <angular_velocity>
+          <x>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>2e-4</stddev>
+            </noise>
+          </x>
+          <y>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>2e-4</stddev>
+            </noise>
+          </y>
+          <z>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>2e-4</stddev>
+            </noise>
+          </z>
+        </angular_velocity>
+        <linear_acceleration>
+          <x>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>1.7e-2</stddev>
+            </noise>
+          </x>
+          <y>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>1.7e-2</stddev>
+            </noise>
+          </y>
+          <z>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>1.7e-2</stddev>
+            </noise>
+          </z>
+        </linear_acceleration>
+      </imu>
+    </sensor>
+  </gazebo>
+  
+  <!-- Foot Contact Sensors -->
+  <gazebo reference="left_ankle_link">
+    <sensor name="left_foot_contact" type="contact">
+      <always_on>true</always_on>
+      <update_rate>1000</update_rate>
+      <contact>
+        <collision>left_ankle_link_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+  
+  <gazebo reference="right_ankle_link">
+    <sensor name="right_foot_contact" type="contact">
+      <always_on>true</always_on>
+      <update_rate>1000</update_rate>
+      <contact>
+        <collision>right_ankle_link_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+</robot>

@@ -1,0 +1,51 @@
+# H1 Control Configuration
+
+# High-Level Controller Parameters
+high_level_controller:
+  ros__parameters:
+    # Velocity limits (m/s, rad/s)
+    max_linear_velocity_x: 1.0    # Forward/backward max speed
+    max_linear_velocity_y: 0.5    # Strafe max speed  
+    max_angular_velocity: 1.5     # Rotation max speed
+    
+    # Default gait and body settings
+    default_gait_type: 1          # 0=idle, 1=trot, 2=running, 3=climb, 4=obstacle
+    default_body_height: 0.0      # Default body height offset (m)
+    default_foot_raise_height: 0.08  # Foot raise during walking (m)
+    
+    # Control settings
+    control_frequency: 500.0      # Control loop frequency (Hz)
+    velocity_smoothing: 0.1       # Velocity smoothing factor (0-1)
+
+# Keyboard Teleop Parameters  
+keyboard_teleop:
+  ros__parameters:
+    linear_speed: 0.3             # Default linear speed (m/s)
+    angular_speed: 0.5            # Default angular speed (rad/s)
+    linear_speed_step: 0.1        # Speed adjustment step
+    angular_speed_step: 0.1
+    max_linear_speed: 1.0
+    max_angular_speed: 1.5
+
+# Joystick Teleop Parameters
+joystick_teleop:
+  ros__parameters:
+    max_linear_x: 1.0
+    max_linear_y: 0.5
+    max_angular_z: 1.5
+    speed_multiplier: 1.0
+    deadzone: 0.1
+    
+    # Axis mappings (Xbox controller default)
+    axis_linear_x: 1              # Left stick Y
+    axis_linear_y: 0              # Left stick X
+    axis_angular_z: 3             # Right stick X
+    
+    # Button mappings
+    button_walk: 0                # A button
+    button_stand: 1               # B button
+    button_idle: 2                # X button
+    button_recovery: 3            # Y button
+    button_speed_down: 4          # LB
+    button_speed_up: 5            # RB
+    button_estop: 6               # Back/Select

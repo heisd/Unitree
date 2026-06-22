@@ -1,0 +1,84 @@
+# ros2_control configuration for Unitree H1 robot
+
+controller_manager:
+  ros__parameters:
+    update_rate: 1000  # Hz
+    
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+    
+    h1_joint_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+h1_joint_trajectory_controller:
+  ros__parameters:
+    joints:
+      # Left leg
+      - left_hip_yaw_joint
+      - left_hip_roll_joint
+      - left_hip_pitch_joint
+      - left_knee_joint
+      - left_ankle_joint
+      # Right leg
+      - right_hip_yaw_joint
+      - right_hip_roll_joint
+      - right_hip_pitch_joint
+      - right_knee_joint
+      - right_ankle_joint
+      # Torso
+      - torso_joint
+      # Left arm
+      - left_shoulder_pitch_joint
+      - left_shoulder_roll_joint
+      - left_shoulder_yaw_joint
+      - left_elbow_joint
+      # Right arm
+      - right_shoulder_pitch_joint
+      - right_shoulder_roll_joint
+      - right_shoulder_yaw_joint
+      - right_elbow_joint
+    
+    command_interfaces:
+      - position
+    
+    state_interfaces:
+      - position
+      - velocity
+    
+    state_publish_rate: 100.0
+    action_monitor_rate: 20.0
+    
+    allow_partial_joints_goal: true
+    allow_integration_in_goal_trajectories: true
+    
+    constraints:
+      stopped_velocity_tolerance: 0.01
+      goal_time: 0.0
+
+joint_state_broadcaster:
+  ros__parameters:
+    joints:
+      # Left leg
+      - left_hip_yaw_joint
+      - left_hip_roll_joint
+      - left_hip_pitch_joint
+      - left_knee_joint
+      - left_ankle_joint
+      # Right leg
+      - right_hip_yaw_joint
+      - right_hip_roll_joint
+      - right_hip_pitch_joint
+      - right_knee_joint
+      - right_ankle_joint
+      # Torso
+      - torso_joint
+      # Left arm
+      - left_shoulder_pitch_joint
+      - left_shoulder_roll_joint
+      - left_shoulder_yaw_joint
+      - left_elbow_joint
+      # Right arm
+      - right_shoulder_pitch_joint
+      - right_shoulder_roll_joint
+      - right_shoulder_yaw_joint
+      - right_elbow_joint
