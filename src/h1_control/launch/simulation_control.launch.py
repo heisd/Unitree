@@ -48,9 +48,15 @@ def generate_launch_description():
         'use_sim_time', default_value='true', description='Use simulation time')
     declare_rviz = DeclareLaunchArgument(
         'rviz', default_value='true', description='Launch RViz')
-    # NOTE: must NOT be named 'world' - IncludeLaunchDescription inherits parent
-    # LaunchConfigurations, and h1_gazebo.launch.py uses 'world' for the world
-    # FILE path. Reusing the name would override its path with this bare name.
+    # Two distinct concepts:
+    #  - 'world'      : which world FILE to load (worlds/<world>.sdf), forwarded
+    #                   to h1_gazebo.launch.py. e.g. h1_world | empty | obstacle_course
+    #  - 'world_name' : the gz <world name="..."> used for /world/<name>/set_pose.
+    #                   All shipped worlds use "h1_world" internally, so this stays
+    #                   constant even when a different FILE is selected.
+    declare_world_file = DeclareLaunchArgument(
+        'world', default_value='h1_world',
+        description='World file name (without .sdf) in h1_gazebo/worlds/')
     declare_world = DeclareLaunchArgument(
         'world_name', default_value='h1_world', description='Gazebo world name')
     declare_stand_height = DeclareLaunchArgument(
@@ -65,6 +71,7 @@ def generate_launch_description():
         launch_arguments={
             'use_sim_time': LaunchConfiguration('use_sim_time'),
             'rviz': LaunchConfiguration('rviz'),
+            'world': LaunchConfiguration('world'),
         }.items()
     )
 
@@ -113,6 +120,7 @@ def generate_launch_description():
     return LaunchDescription([
         declare_use_sim_time,
         declare_rviz,
+        declare_world_file,
         declare_world,
         declare_stand_height,
         gazebo_launch,

@@ -1,0 +1,113 @@
+<?xml version="1.0" ?>
+<!--
+  Warehouse / logistics world for the H1 robot.
+  Walled hall with shelving rows, palletised cardboard boxes, stacked totes,
+  an AGV and waste bins. Robot starts at origin facing +X down the centre aisle.
+
+  NOTE: the <world name> MUST stay "h1_world" so `full` mode finds
+        /world/h1_world/set_pose.
+-->
+<sdf version="1.8">
+  <world name="h1_world">
+
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <plugin filename="gz-sim-physics-system"
+            name="gz::sim::systems::Physics"></plugin>
+    <plugin filename="gz-sim-user-commands-system"
+            name="gz::sim::systems::UserCommands"></plugin>
+    <plugin filename="gz-sim-scene-broadcaster-system"
+            name="gz::sim::systems::SceneBroadcaster"></plugin>
+    <plugin filename="gz-sim-contact-system"
+            name="gz::sim::systems::Contact"></plugin>
+    <plugin filename="gz-sim-imu-system"
+            name="gz::sim::systems::Imu"></plugin>
+    <plugin filename="gz-sim-sensors-system"
+            name="gz::sim::systems::Sensors">
+      <render_engine>ogre</render_engine>
+    </plugin>
+
+    <scene>
+      <ambient>0.6 0.6 0.6 1</ambient>
+      <background>0.8 0.8 0.85 1</background>
+      <sky></sky>
+    </scene>
+
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.95 0.95 0.95 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.4 0.2 -0.9</direction>
+    </light>
+
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry><plane><normal>0 0 1</normal><size>100 100</size></plane></geometry>
+          <surface><friction><ode><mu>100</mu><mu2>50</mu2></ode></friction></surface>
+        </collision>
+        <visual name="visual">
+          <geometry><plane><normal>0 0 1</normal><size>100 100</size></plane></geometry>
+          <material>
+            <ambient>0.45 0.45 0.47 1</ambient>
+            <diffuse>0.5 0.5 0.52 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ===================== Perimeter walls (7.5 m segments) ===================== -->
+    <include><name>wall_l1</name><uri>model://grey_wall</uri><pose>0 7.5 0 0 0 0</pose></include>
+    <include><name>wall_l2</name><uri>model://grey_wall</uri><pose>7.5 7.5 0 0 0 0</pose></include>
+    <include><name>wall_l3</name><uri>model://grey_wall</uri><pose>15 7.5 0 0 0 0</pose></include>
+    <include><name>wall_r1</name><uri>model://grey_wall</uri><pose>0 -7.5 0 0 0 0</pose></include>
+    <include><name>wall_r2</name><uri>model://grey_wall</uri><pose>7.5 -7.5 0 0 0 0</pose></include>
+    <include><name>wall_r3</name><uri>model://grey_wall</uri><pose>15 -7.5 0 0 0 0</pose></include>
+    <include><name>wall_back1</name><uri>model://grey_wall</uri><pose>18.75 3.75 0 0 0 1.5708</pose></include>
+    <include><name>wall_back2</name><uri>model://grey_wall</uri><pose>18.75 -3.75 0 0 0 1.5708</pose></include>
+    <include><name>wall_front1</name><uri>model://grey_wall</uri><pose>-3.75 3.75 0 0 0 1.5708</pose></include>
+    <include><name>wall_front2</name><uri>model://grey_wall</uri><pose>-3.75 -3.75 0 0 0 1.5708</pose></include>
+
+    <!-- ===================== Shelving rows (bookshelves) ===================== -->
+    <include><name>shelf_a1</name><uri>model://bookshelf</uri><pose>3 3 0 0 0 0</pose></include>
+    <include><name>shelf_a2</name><uri>model://bookshelf</uri><pose>5 3 0 0 0 0</pose></include>
+    <include><name>shelf_a3</name><uri>model://bookshelf</uri><pose>7 3 0 0 0 0</pose></include>
+    <include><name>shelf_b1</name><uri>model://bookshelf</uri><pose>3 -3 0 0 0 0</pose></include>
+    <include><name>shelf_b2</name><uri>model://bookshelf</uri><pose>5 -3 0 0 0 0</pose></include>
+    <include><name>shelf_b3</name><uri>model://bookshelf</uri><pose>7 -3 0 0 0 0</pose></include>
+    <include><name>shelf_c1</name><uri>model://bookshelf</uri><pose>3 5.8 0 0 0 0</pose></include>
+    <include><name>shelf_c2</name><uri>model://bookshelf</uri><pose>5 5.8 0 0 0 0</pose></include>
+    <include><name>shelf_c3</name><uri>model://bookshelf</uri><pose>7 5.8 0 0 0 0</pose></include>
+    <include><name>shelf_d1</name><uri>model://bookshelf</uri><pose>3 -5.8 0 0 0 0</pose></include>
+    <include><name>shelf_d2</name><uri>model://bookshelf</uri><pose>5 -5.8 0 0 0 0</pose></include>
+    <include><name>shelf_d3</name><uri>model://bookshelf</uri><pose>7 -5.8 0 0 0 0</pose></include>
+
+    <!-- ===================== Pallets + cardboard boxes ===================== -->
+    <include><name>pallet_1</name><uri>model://euro_pallet</uri><pose>11 3 0 0 0 0</pose></include>
+    <include><name>pallet_2</name><uri>model://euro_pallet</uri><pose>13 3 0 0 0 0</pose></include>
+    <include><name>pallet_3</name><uri>model://euro_pallet</uri><pose>11 -3 0 0 0 0</pose></include>
+    <include><name>pallet_4</name><uri>model://euro_pallet</uri><pose>13 -3 0 0 0 0</pose></include>
+    <include><name>box_1</name><uri>model://cardboard_box</uri><pose>11 3 0.30 0 0 0</pose></include>
+    <include><name>box_2</name><uri>model://cardboard_box</uri><pose>11 3 0.60 0 0 0.3</pose></include>
+    <include><name>box_3</name><uri>model://cardboard_box</uri><pose>13 -3 0.30 0 0 0</pose></include>
+
+    <!-- ===================== Stacked totes ===================== -->
+    <include><name>tote_1</name><uri>model://grey_tote</uri><pose>15 0 0 0 0 0</pose></include>
+    <include><name>tote_2</name><uri>model://grey_tote</uri><pose>15 0 0.31 0 0 0</pose></include>
+    <include><name>tote_3</name><uri>model://grey_tote</uri><pose>15.7 0 0 0 0 0</pose></include>
+
+    <!-- ===================== AGV + waste bins + cases ===================== -->
+    <include><name>agv</name><uri>model://warehouse_robot</uri><pose>8 0 0 0 0 1.5708</pose></include>
+    <include><name>dumpster</name><uri>model://dumpster</uri><pose>15 6 0 0 0 1.5708</pose></include>
+    <include><name>trash_can</name><uri>model://first_2015_trash_can</uri><pose>-2 6 0 0 0 0</pose></include>
+    <include><name>case_1</name><uri>model://wooden_case</uri><pose>-2 -6 0 0 0 0</pose></include>
+    <include><name>case_2</name><uri>model://wooden_case</uri><pose>0 -6 0 0 0 0</pose></include>
+
+  </world>
+</sdf>

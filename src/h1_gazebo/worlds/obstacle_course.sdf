@@ -1,0 +1,103 @@
+<?xml version="1.0" ?>
+<!--
+  Obstacle / navigation test course for the H1 robot.
+  Cones (slalom gates) -> barrels -> jersey-barrier corridor -> ramp ->
+  stairs -> maze wall, laid out along +X (robot starts at origin facing +X).
+
+  NOTE 1: the <world name> MUST stay "h1_world" so `full` mode finds
+          /world/h1_world/set_pose.
+  NOTE 2: in `full` mode the kinematic base driver glides the robot at a
+          fixed height, so the ramp/stairs are NOT physically climbed -
+          they are visual / navigation targets. Cones, barrels, barriers
+          and maze walls work as real navigation obstacles.
+-->
+<sdf version="1.8">
+  <world name="h1_world">
+
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <plugin filename="gz-sim-physics-system"
+            name="gz::sim::systems::Physics"></plugin>
+    <plugin filename="gz-sim-user-commands-system"
+            name="gz::sim::systems::UserCommands"></plugin>
+    <plugin filename="gz-sim-scene-broadcaster-system"
+            name="gz::sim::systems::SceneBroadcaster"></plugin>
+    <plugin filename="gz-sim-contact-system"
+            name="gz::sim::systems::Contact"></plugin>
+    <plugin filename="gz-sim-imu-system"
+            name="gz::sim::systems::Imu"></plugin>
+    <plugin filename="gz-sim-sensors-system"
+            name="gz::sim::systems::Sensors">
+      <render_engine>ogre</render_engine>
+    </plugin>
+
+    <scene>
+      <ambient>0.5 0.5 0.5 1</ambient>
+      <background>0.7 0.8 0.95 1</background>
+      <sky></sky>
+    </scene>
+
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.9 0.9 0.9 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.5 0.3 -0.9</direction>
+    </light>
+
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane><normal>0 0 1</normal><size>100 100</size></plane>
+          </geometry>
+          <surface>
+            <friction><ode><mu>100</mu><mu2>50</mu2></ode></friction>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane><normal>0 0 1</normal><size>100 100</size></plane>
+          </geometry>
+          <material>
+            <ambient>0.55 0.55 0.55 1</ambient>
+            <diffuse>0.6 0.6 0.6 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ================= Slalom gates (cones) ================= -->
+    <include><name>cone_g1_l</name><uri>model://construction_cone</uri><pose>2 1 0 0 0 0</pose></include>
+    <include><name>cone_g1_r</name><uri>model://construction_cone</uri><pose>2 -1 0 0 0 0</pose></include>
+    <include><name>cone_g2_l</name><uri>model://construction_cone</uri><pose>5 1 0 0 0 0</pose></include>
+    <include><name>cone_g2_r</name><uri>model://construction_cone</uri><pose>5 -1 0 0 0 0</pose></include>
+    <include><name>cone_g3_l</name><uri>model://construction_cone</uri><pose>8 1 0 0 0 0</pose></include>
+    <include><name>cone_g3_r</name><uri>model://construction_cone</uri><pose>8 -1 0 0 0 0</pose></include>
+
+    <!-- ================= Weave barrels ================= -->
+    <include><name>barrel_1</name><uri>model://construction_barrel</uri><pose>11 1.5 0 0 0 0</pose></include>
+    <include><name>barrel_2</name><uri>model://construction_barrel</uri><pose>13 -1.5 0 0 0 0</pose></include>
+    <include><name>barrel_3</name><uri>model://construction_barrel</uri><pose>15 1.5 0 0 0 0</pose></include>
+
+    <!-- ================= Jersey-barrier corridor ================= -->
+    <include><name>barrier_l1</name><uri>model://jersey_barrier</uri><pose>18 2 0 0 0 0</pose></include>
+    <include><name>barrier_l2</name><uri>model://jersey_barrier</uri><pose>22 2 0 0 0 0</pose></include>
+    <include><name>barrier_r1</name><uri>model://jersey_barrier</uri><pose>18 -2 0 0 0 0</pose></include>
+    <include><name>barrier_r2</name><uri>model://jersey_barrier</uri><pose>22 -2 0 0 0 0</pose></include>
+
+    <!-- ================= Ramp + stairs (visual targets) ================= -->
+    <include><name>ramp</name><uri>model://nist_simple_ramp_120</uri><pose>27 -1.2 0 0 0 0</pose></include>
+    <include><name>stairs</name><uri>model://nist_stairs_120</uri><pose>27 1.2 0 0 0 0</pose></include>
+
+    <!-- ================= Maze wall (forces a turn) ================= -->
+    <include><name>maze_wall_1</name><uri>model://nist_maze_wall_120</uri><pose>33 1.5 0 0 0 0</pose></include>
+    <include><name>maze_wall_2</name><uri>model://nist_maze_wall_120</uri><pose>33 -1.5 0 0 0 1.5708</pose></include>
+
+  </world>
+</sdf>

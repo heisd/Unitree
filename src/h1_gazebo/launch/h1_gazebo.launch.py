@@ -18,7 +18,7 @@ from launch.actions import (
 )
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 
 
@@ -43,8 +43,14 @@ def generate_launch_description():
     if not os.path.exists(urdf_file):
         raise FileNotFoundError(f"URDF file not found: {urdf_file}")
     
-    world_file = os.path.join(pkg_h1_gazebo, 'worlds', 'h1_world.sdf')
     rviz_config = os.path.join(pkg_h1_gazebo, 'config', 'h1_display.rviz')
+
+    # Resolve the selected world by NAME to worlds/<name>.sdf at launch time.
+    # All shipped worlds keep <world name="h1_world"> internally so that
+    # `full` mode (set_pose service) works regardless of which file is loaded.
+    world_path = PathJoinSubstitution([
+        pkg_h1_gazebo, 'worlds', LaunchConfiguration('world')
+    ])
     
     # Set Gazebo resource path to find meshes.
     # - src/robots: H1 URDF meshes (model://h1_description)
@@ -77,8 +83,9 @@ def generate_launch_description():
     
     declare_world = DeclareLaunchArgument(
         'world',
-        default_value=world_file,
-        description='Path to the Gazebo world file'
+        default_value='h1_world',
+        description='World file name (without .sdf) in h1_gazebo/worlds/, '
+                    'e.g. h1_world | empty | obstacle_course'
     )
     
     declare_rviz = DeclareLaunchArgument(
@@ -118,7 +125,7 @@ def generate_launch_description():
             # --render-engine ogre: use OGRE v1 instead of the default ogre2.
             # ogre2's GL3Plus backend crashes on WSL2 / limited-GL drivers
             # (Ogre::UnimplementedException in GL3PlusTextureGpu::copyTo).
-            'gz_args': ['-r -v4 --render-engine ogre ', LaunchConfiguration('world')],
+            'gz_args': ['-r -v4 --render-engine ogre ', world_path, '.sdf'],
         }.items()
     )
     

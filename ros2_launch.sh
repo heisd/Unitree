@@ -22,20 +22,23 @@ usage() {
     echo "  teleop          Launch keyboard teleoperation"
     echo "  control         Launch high-level control node"
     echo "  full            Launch Gazebo + control + teleop"
+    echo "  worlds          List available world files"
     echo "  topic <args>    Run ros2 topic command"
     echo "  node <args>     Run ros2 node command"
     echo "  run <pkg> <exe> Run a ROS 2 executable"
     echo "  build           Build the workspace"
     echo ""
-    echo "Options for gazebo:"
+    echo "Options for gazebo / full:"
+    echo "  --world <name>  Select world worlds/<name>.sdf (default: h1_world)"
     echo "  --no-rviz       Disable RViz"
-    echo "  --no-gui        Disable Gazebo GUI"
+    echo "  --no-gui        Disable Gazebo GUI (gazebo only)"
     echo ""
     echo "Examples:"
     echo "  ./ros2_launch.sh gazebo"
-    echo "  ./ros2_launch.sh teleop"
-    echo "  ./ros2_launch.sh full"
-    echo "  ./ros2_launch.sh topic list"
+    echo "  ./ros2_launch.sh gazebo --world empty"
+    echo "  ./ros2_launch.sh gazebo --world obstacle_course --no-rviz"
+    echo "  ./ros2_launch.sh full --world h1_world"
+    echo "  ./ros2_launch.sh worlds"
     echo "  ./ros2_launch.sh build"
 }
 
@@ -64,14 +67,19 @@ case "$1" in
         shift
         RVIZ_ARG="rviz:=true"
         GUI_ARG="gui:=true"
-        for arg in "$@"; do
-            case "$arg" in
+        WORLD_ARG=""
+        while [ $# -gt 0 ]; do
+            case "$1" in
                 --no-rviz) RVIZ_ARG="rviz:=false" ;;
-                --no-gui) GUI_ARG="gui:=false" ;;
+                --no-gui)  GUI_ARG="gui:=false" ;;
+                --world)   shift; WORLD_ARG="world:=$1" ;;
+                --world=*) WORLD_ARG="world:=${1#*=}" ;;
+                world:=*)  WORLD_ARG="$1" ;;
             esac
+            shift
         done
         echo -e "${GREEN}Launching H1 Gazebo simulation...${NC}"
-        ros2_run "ros2 launch h1_gazebo h1_gazebo.launch.py $RVIZ_ARG $GUI_ARG"
+        ros2_run "ros2 launch h1_gazebo h1_gazebo.launch.py $RVIZ_ARG $GUI_ARG $WORLD_ARG"
         ;;
     
     teleop)
@@ -85,8 +93,26 @@ case "$1" in
         ;;
     
     full)
+        shift
+        RVIZ_ARG="rviz:=true"
+        WORLD_ARG=""
+        while [ $# -gt 0 ]; do
+            case "$1" in
+                --no-rviz) RVIZ_ARG="rviz:=false" ;;
+                --world)   shift; WORLD_ARG="world:=$1" ;;
+                --world=*) WORLD_ARG="world:=${1#*=}" ;;
+                world:=*)  WORLD_ARG="$1" ;;
+            esac
+            shift
+        done
         echo -e "${GREEN}Launching full simulation with control...${NC}"
-        ros2_run "ros2 launch h1_control simulation_control.launch.py"
+        ros2_run "ros2 launch h1_control simulation_control.launch.py $RVIZ_ARG $WORLD_ARG"
+        ;;
+
+    worlds)
+        echo -e "${GREEN}Available worlds (src/h1_gazebo/worlds/):${NC}"
+        ls -1 "$SCRIPT_DIR/src/h1_gazebo/worlds/"*.sdf 2>/dev/null \
+            | xargs -n1 basename | sed 's/\.sdf$//'
         ;;
     
     topic)

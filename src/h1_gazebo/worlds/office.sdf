@@ -1,0 +1,102 @@
+<?xml version="1.0" ?>
+<!--
+  Indoor office world for the H1 robot.
+  Walled room with two rows of desks, bookshelves along the wall, filing
+  cabinets, a control console, and a small break corner. Robot starts at
+  origin facing +X, walking down the aisle between the desk rows.
+
+  NOTE: the <world name> MUST stay "h1_world" so `full` mode finds
+        /world/h1_world/set_pose.
+-->
+<sdf version="1.8">
+  <world name="h1_world">
+
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <plugin filename="gz-sim-physics-system"
+            name="gz::sim::systems::Physics"></plugin>
+    <plugin filename="gz-sim-user-commands-system"
+            name="gz::sim::systems::UserCommands"></plugin>
+    <plugin filename="gz-sim-scene-broadcaster-system"
+            name="gz::sim::systems::SceneBroadcaster"></plugin>
+    <plugin filename="gz-sim-contact-system"
+            name="gz::sim::systems::Contact"></plugin>
+    <plugin filename="gz-sim-imu-system"
+            name="gz::sim::systems::Imu"></plugin>
+    <plugin filename="gz-sim-sensors-system"
+            name="gz::sim::systems::Sensors">
+      <render_engine>ogre</render_engine>
+    </plugin>
+
+    <scene>
+      <ambient>0.65 0.65 0.65 1</ambient>
+      <background>0.85 0.86 0.9 1</background>
+      <sky></sky>
+    </scene>
+
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.95 0.95 0.95 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.3 0.3 -0.9</direction>
+    </light>
+
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry><plane><normal>0 0 1</normal><size>100 100</size></plane></geometry>
+          <surface><friction><ode><mu>100</mu><mu2>50</mu2></ode></friction></surface>
+        </collision>
+        <visual name="visual">
+          <geometry><plane><normal>0 0 1</normal><size>100 100</size></plane></geometry>
+          <material>
+            <ambient>0.7 0.68 0.62 1</ambient>
+            <diffuse>0.78 0.75 0.68 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ===================== Room walls (7.5 m segments) ===================== -->
+    <include><name>wall_l1</name><uri>model://grey_wall</uri><pose>0 6.75 0 0 0 0</pose></include>
+    <include><name>wall_l2</name><uri>model://grey_wall</uri><pose>7.5 6.75 0 0 0 0</pose></include>
+    <include><name>wall_r1</name><uri>model://grey_wall</uri><pose>0 -6.75 0 0 0 0</pose></include>
+    <include><name>wall_r2</name><uri>model://grey_wall</uri><pose>7.5 -6.75 0 0 0 0</pose></include>
+    <include><name>wall_back1</name><uri>model://grey_wall</uri><pose>11.25 3 0 0 0 1.5708</pose></include>
+    <include><name>wall_back2</name><uri>model://grey_wall</uri><pose>11.25 -3 0 0 0 1.5708</pose></include>
+    <include><name>wall_front1</name><uri>model://grey_wall</uri><pose>-3.75 3 0 0 0 1.5708</pose></include>
+    <include><name>wall_front2</name><uri>model://grey_wall</uri><pose>-3.75 -3 0 0 0 1.5708</pose></include>
+
+    <!-- ===================== Desks (two rows) ===================== -->
+    <include><name>desk_a1</name><uri>model://table</uri><pose>2 2 0 0 0 0</pose></include>
+    <include><name>desk_a2</name><uri>model://table</uri><pose>4.5 2 0 0 0 0</pose></include>
+    <include><name>desk_a3</name><uri>model://table</uri><pose>7 2 0 0 0 0</pose></include>
+    <include><name>desk_b1</name><uri>model://table</uri><pose>2 -2 0 0 0 0</pose></include>
+    <include><name>desk_b2</name><uri>model://table</uri><pose>4.5 -2 0 0 0 0</pose></include>
+    <include><name>desk_b3</name><uri>model://table</uri><pose>7 -2 0 0 0 0</pose></include>
+
+    <!-- ===================== Bookshelves along the left wall ===================== -->
+    <include><name>shelf_1</name><uri>model://bookshelf</uri><pose>2 6.3 0 0 0 3.14159</pose></include>
+    <include><name>shelf_2</name><uri>model://bookshelf</uri><pose>4 6.3 0 0 0 3.14159</pose></include>
+    <include><name>shelf_3</name><uri>model://bookshelf</uri><pose>6 6.3 0 0 0 3.14159</pose></include>
+    <include><name>shelf_4</name><uri>model://bookshelf</uri><pose>8 6.3 0 0 0 3.14159</pose></include>
+
+    <!-- ===================== Filing cabinets + console ===================== -->
+    <include><name>cabinet_1</name><uri>model://cabinet</uri><pose>9.5 -5 0 0 0 0</pose></include>
+    <include><name>cabinet_2</name><uri>model://cabinet</uri><pose>9.5 -3.6 0 0 0 0</pose></include>
+    <include><name>console</name><uri>model://control_console</uri><pose>10.3 2 0 0 0 1.5708</pose></include>
+    <include><name>reception_table</name><uri>model://cafe_table</uri><pose>8.5 4.5 0 0 0 0</pose></include>
+
+    <!-- ===================== Break corner ===================== -->
+    <include><name>break_table</name><uri>model://cafe_table</uri><pose>1 -5 0 0 0 0</pose></include>
+    <include><name>coke_can</name><uri>model://coke_can</uri><pose>1 -5 0.78 0 0 0</pose></include>
+    <include><name>cup</name><uri>model://plastic_cup</uri><pose>1.25 -4.75 0.78 0 0 0</pose></include>
+
+  </world>
+</sdf>
