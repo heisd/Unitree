@@ -26,6 +26,21 @@ from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
 
+# H1 actuated joints - their JointPositionController plugins listen on the gz
+# topic /model/h1/joint/<joint>/cmd_pos (set via <topic> in h1.urdf).
+JOINT_NAMES = [
+    'left_hip_yaw_joint', 'left_hip_roll_joint', 'left_hip_pitch_joint',
+    'left_knee_joint', 'left_ankle_joint',
+    'right_hip_yaw_joint', 'right_hip_roll_joint', 'right_hip_pitch_joint',
+    'right_knee_joint', 'right_ankle_joint',
+    'torso_joint',
+    'left_shoulder_pitch_joint', 'left_shoulder_roll_joint',
+    'left_shoulder_yaw_joint', 'left_elbow_joint',
+    'right_shoulder_pitch_joint', 'right_shoulder_roll_joint',
+    'right_shoulder_yaw_joint', 'right_elbow_joint',
+]
+
+
 def generate_launch_description():
     pkg_h1_gazebo = get_package_share_directory('h1_gazebo')
 
@@ -62,6 +77,19 @@ def generate_launch_description():
         output='screen',
     )
 
+    # Bridge the 19 joint position-command topics (ROS Float64 -> gz Double) so the
+    # driver's walking-gait targets reach the JointPositionController plugins.
+    joint_cmd_bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        name='joint_cmd_bridge',
+        arguments=[
+            f'/model/h1/joint/{j}/cmd_pos@std_msgs/msg/Float64]ignition.msgs.Double'
+            for j in JOINT_NAMES
+        ],
+        output='screen',
+    )
+
     # Kinematic floating-base driver - delayed so Gazebo + bridge are up first
     base_driver = TimerAction(
         period=4.0,
@@ -89,5 +117,6 @@ def generate_launch_description():
         declare_stand_height,
         gazebo_launch,
         set_pose_bridge,
+        joint_cmd_bridge,
         base_driver,
     ])
