@@ -106,12 +106,37 @@ cd Unitree
   Q / E   —— 左转 / 右转
 
 速度调节：
-  Z / X   —— 增大 / 减小线速度
-  C / V   —— 增大 / 减小角速度
+  Z / X   —— 减小 / 增大线速度
+  C / V   —— 减小 / 增大角速度
+
+模式切换：
+  1   —— Idle（待机）
+  2   —— Forced Stand（锁定站姿）
+  3   —— Walk / Trot（步行）
+  4   —— Trot Running（快走）
+  5   —— Recovery（恢复）
 
 SPACE   —— 急停
 ESC     —— 退出
 ```
+
+## 手柄遥控操作（Xbox / PS4）
+
+| 输入 | 功能 |
+|------|------|
+| 左摇杆上/下 | 前进 / 后退 |
+| 左摇杆左/右 | 左平移 / 右平移 |
+| 右摇杆左/右 | 左转 / 右转 |
+| A / X | 切换行走模式（Trot） |
+| B / O | Forced Stand |
+| X / □ | Idle |
+| Y / △ | Recovery |
+| LB / L1 | 减小速度 |
+| RB / R1 | 增大速度 |
+| Back / Select | 急停 |
+| Start | 启用行走 |
+
+> 手柄启动命令：`./ros2_launch.sh run h1_control joystick_teleop.py`
 
 ---
 
