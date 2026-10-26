@@ -62,7 +62,8 @@ sudo apt install ros-humble-ros-gz
 
 ```bash
 # 1. 克隆仓库
-git clone <repo-url> && cd Unitree
+git clone --recurse-submodules --branch WSLHumble https://github.com/heisd/Unitree.git
+cd Unitree
 
 # 2. 构建（仅需一次）
 ./ros2_launch.sh build
