@@ -348,3 +348,54 @@ This project is released under the [Apache License 2.0](LICENSE).
 
 - [Unitree Robotics](https://www.unitree.com/) — H1 robot hardware and SDK
 - [unitree_ros](https://github.com/unitreerobotics/unitree_ros) — Original robot description files
+
+## First-run validation
+
+After installing dependencies and building, start with a simple world:
+
+```bash
+./ros2_launch.sh full --world empty --no-rviz
+```
+
+Open another terminal in the repository and run:
+
+```bash
+./ros2_launch.sh teleop
+```
+
+The `full` branch launches the combined simulation; the keyboard program is still started separately with `teleop`. Check model spawning and nodes before sending small velocity commands.
+
+## Inspect the control path
+
+```bash
+./ros2_launch.sh node list
+./ros2_launch.sh topic list
+./ros2_launch.sh topic echo /cmd_vel --once
+./ros2_launch.sh topic hz /joint_states
+```
+
+| Observation | What it establishes | What it does not establish |
+| --- | --- | --- |
+| /cmd_vel messages | Control input is published | The model necessarily responds |
+| Joint-state updates | Simulation state output exists | Dynamically stable walking |
+| Upright motion | The kinematic base is active | A closed-loop balance controller |
+| Leg and arm oscillation | Gait animation is active | Correct contact dynamics |
+
+The base is moved through set_pose. Visual walking and command feedback are not measurements of real-humanoid balance or physical locomotion.
+
+## Environment isolation
+
+[ros2_launch.sh](./ros2_launch.sh) starts commands through `env -i`, loads a fixed Humble environment and keeps selected display variables and paths. This reduces conda and RMW interference, but other variables from the calling terminal are not automatically retained.
+
+For custom nodes, check the script's environment and dependency setup when a command works directly in a terminal but fails through the wrapper.
+
+Option handling differs between subcommands. In the current script, `--no-gui` is parsed by `gazebo`; do not assume every documented switch applies to every subcommand.
+
+## Validation after changes
+
+- URDF/Xacro: model spawning, joint names and TF.
+- Bridges: message types, directions and service names.
+- Motion parameters: stationary behavior, acceleration, stopping and turning.
+- Worlds: internal world names, services and launch arguments, not just SDF filenames.
+
+Real dynamic walking requires separately implemented and validated contact, balance and feedback control.
