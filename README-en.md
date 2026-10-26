@@ -61,7 +61,8 @@ Required packages: `ros_gz_sim` · `ros_gz_bridge` · `ros_gz_interfaces` · `ro
 
 ```bash
 # 1. Clone the repository
-git clone <repo-url> && cd Unitree
+git clone --recurse-submodules --branch WSLHumble https://github.com/heisd/Unitree.git
+cd Unitree
 
 # 2. Build (one-time only)
 ./ros2_launch.sh build
