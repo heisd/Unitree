@@ -350,3 +350,54 @@ WSL2 OpenGL 受限问题，已在 `h1_gazebo.launch.py` 中通过 `--render-engi
 
 - [Unitree Robotics](https://www.unitree.com/) — H1 机器人硬件与 SDK
 - [unitree_ros](https://github.com/unitreerobotics/unitree_ros) — 原始机器人描述文件
+
+## 首次验证：逐步确认链路
+
+在准备好依赖并执行 `build` 后，建议先采用简单场景：
+
+```bash
+./ros2_launch.sh full --world empty --no-rviz
+```
+
+另开终端进入仓库，启动键盘控制：
+
+```bash
+./ros2_launch.sh teleop
+```
+
+`full` 的实际实现启动组合 launch；键盘程序仍通过单独的 `teleop` 命令运行。窗口出现后先确认模型生成与 ROS 节点，再尝试小幅速度输入。
+
+## 检查命令与预期
+
+```bash
+./ros2_launch.sh node list
+./ros2_launch.sh topic list
+./ros2_launch.sh topic echo /cmd_vel --once
+./ros2_launch.sh topic hz /joint_states
+```
+
+| 检查 | 可以确认 | 不能单独证明 |
+| --- | --- | --- |
+| /cmd_vel 有数据 | 控制输入已发布 | 模型一定响应 |
+| 关节状态更新 | 仿真状态链路有输出 | 真实物理行走稳定 |
+| 模型保持直立并移动 | 运动学底座驱动在工作 | 存在闭环平衡控制器 |
+| 腿臂随速度摆动 | 步态视觉动画在工作 | 足底接触与动力学正确 |
+
+本项目的主要定位是运动学仿真与可视化。底座通过 set_pose 更新，动作反馈和视觉效果不能当作真实人形机器人稳定控制的验证。
+
+## 启动脚本的环境边界
+
+[ros2_launch.sh](./ros2_launch.sh) 使用 `env -i` 并加载固定的 Humble 环境，同时保留显示相关变量和必要路径。这样有利于隔离 conda 与 RMW 配置干扰，但也意味着外部终端中的其他环境变量不会自动继承。
+
+如果添加依赖自定义环境的节点，应检查脚本的白名单、路径与依赖加载方式；不要把所有“终端里能运行、脚本里失败”的情况归结为节点源码。
+
+脚本对 `gazebo` 和 `full` 的参数处理并不完全相同。例如 `--no-gui` 在当前脚本的 `gazebo` 分支被解析，不能假定它在每个子命令下都生效。
+
+## 修改后的验证范围
+
+- 修改 URDF / Xacro：检查模型生成、关节名和 TF。
+- 修改桥接配置：分别确认话题类型、方向和服务名称。
+- 修改动画或速度参数：观察静止、启动、停止与转向。
+- 修改场景：核对内部 world 名称、服务与 launch 传参，而不仅是 SDF 文件名。
+
+需要真实动力学行走时，应另行实现和验证接触、平衡与闭环控制。本 README 不将现有视觉步态描述为该能力。
